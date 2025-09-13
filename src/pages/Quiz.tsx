@@ -1,36 +1,36 @@
 import { useState, useMemo } from "react";
-import { vehicles } from "@/data/vehicles";
+import { terms } from "@/data/terms";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Trophy } from "lucide-react";
-import { QuizQuestion } from "@/types/vehicle";
+import { QuizQuestion } from "@/types/term";
 
 const Quiz = () => {
   const navigate = useNavigate();
   
   // Generate quiz questions
   const quizQuestions = useMemo((): QuizQuestion[] => {
-    const shuffledVehicles = [...vehicles].sort(() => Math.random() - 0.5).slice(0, 5);
+    const shuffledTerms = [...terms].sort(() => Math.random() - 0.5).slice(0, 5);
     
-    return shuffledVehicles.map((vehicle, index) => {
-      // Create wrong options from other vehicles
-      const wrongOptions = vehicles
-        .filter(v => v.id !== vehicle.id)
+    return shuffledTerms.map((term, index) => {
+      // Create wrong options from other terms
+      const wrongOptions = terms
+        .filter(t => t.id !== term.id)
         .sort(() => Math.random() - 0.5)
         .slice(0, 3)
-        .map(v => v.name);
+        .map(t => t.name);
       
-      const allOptions = [vehicle.name, ...wrongOptions].sort(() => Math.random() - 0.5);
-      const correctAnswer = allOptions.indexOf(vehicle.name);
+      const allOptions = [term.name, ...wrongOptions].sort(() => Math.random() - 0.5);
+      const correctAnswer = allOptions.indexOf(term.name);
 
       return {
         id: `question-${index}`,
-        question: `Which vehicle matches this definition: "${vehicle.shortDefinition}"`,
+        question: `Which term matches this definition: "${term.shortDefinition}"`,
         options: allOptions,
         correctAnswer,
-        vehicle
+        term
       };
     });
   }, []);
@@ -122,6 +122,9 @@ const Quiz = () => {
                         <XCircle className="h-5 w-5 text-red-500" />
                       )}
                       <span className="font-semibold">Question {index + 1}</span>
+                      <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold ml-auto">
+                        {question.term.letter}
+                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">
                       {question.question}
@@ -189,9 +192,14 @@ const Quiz = () => {
         <Card className="max-w-2xl mx-auto shadow-card">
           <CardHeader>
             <div className="flex items-center justify-between mb-4">
-              <Badge variant="outline">
-                {currentQ.vehicle.category}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">
+                  {currentQ.term.letter}
+                </div>
+                <Badge variant="outline">
+                  {currentQ.term.category}
+                </Badge>
+              </div>
               <div className="text-sm text-muted-foreground">
                 Progress: {Math.round(((currentQuestion + 1) / quizQuestions.length) * 100)}%
               </div>

@@ -1,27 +1,30 @@
 import { useState, useMemo } from "react";
-import { VehicleCard } from "@/components/VehicleCard";
+import { TermCard } from "@/components/TermCard";
 import { SearchAndFilter } from "@/components/SearchAndFilter";
+import { AlphabetNavigation } from "@/components/AlphabetNavigation";
 import { Button } from "@/components/ui/button";
-import { vehicles } from "@/data/vehicles";
+import { terms } from "@/data/terms";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Brain } from "lucide-react";
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const filteredVehicles = useMemo(() => {
-    return vehicles.filter((vehicle) => {
-      const matchesSearch = vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.shortDefinition.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        vehicle.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredTerms = useMemo(() => {
+    return terms.filter((term) => {
+      const matchesSearch = term.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        term.shortDefinition.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        term.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
       
-      const matchesCategory = selectedCategory === null || vehicle.category === selectedCategory;
+      const matchesCategory = selectedCategory === null || term.category === selectedCategory;
+      const matchesLetter = selectedLetter === null || term.letter === selectedLetter;
 
-      return matchesSearch && matchesCategory;
+      return matchesSearch && matchesCategory && matchesLetter;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, selectedLetter]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -31,10 +34,10 @@ const Home = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                Vehicle Dictionary
+                Dictionary A-Z
               </h1>
               <p className="text-primary-foreground/80 text-lg">
-                Explore Prime Movers and Hybrid Vehicles
+                Prime Movers and Hybrid Vehicle Terms
               </p>
             </div>
             <Button
@@ -51,33 +54,44 @@ const Home = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-8 space-y-6">
           <SearchAndFilter
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
           />
+          
+          <div>
+            <p className="text-sm text-muted-foreground mb-3 text-center">
+              Browse by letter:
+            </p>
+            <AlphabetNavigation
+              selectedLetter={selectedLetter}
+              onLetterChange={setSelectedLetter}
+            />
+          </div>
         </div>
 
         {/* Results */}
         <div className="mb-4">
           <p className="text-muted-foreground">
-            {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? 's' : ''} found
+            {filteredTerms.length} term{filteredTerms.length !== 1 ? 's' : ''} found
+            {selectedLetter && ` for letter "${selectedLetter}"`}
           </p>
         </div>
 
-        {/* Vehicle Grid */}
+        {/* Terms Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredVehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} />
+          {filteredTerms.map((term) => (
+            <TermCard key={term.id} term={term} />
           ))}
         </div>
 
-        {filteredVehicles.length === 0 && (
+        {filteredTerms.length === 0 && (
           <div className="text-center py-12">
             <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No vehicles found</h3>
+            <h3 className="text-lg font-semibold mb-2">No terms found</h3>
             <p className="text-muted-foreground">
               Try adjusting your search or filter criteria
             </p>

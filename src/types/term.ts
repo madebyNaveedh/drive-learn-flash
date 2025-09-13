@@ -1,7 +1,8 @@
-export interface Vehicle {
+export interface Term {
   id: string;
   name: string;
-  category: 'Prime Mover' | 'Hybrid Vehicle';
+  letter: string;
+  category: 'Prime Mover' | 'Hybrid Vehicle' | 'General';
   thumbnailImage: string;
   largeImage: string;
   shortDefinition: string;
@@ -14,5 +15,5 @@ export interface QuizQuestion {
   question: string;
   options: string[];
   correctAnswer: number;
-  vehicle: Vehicle;
+  term: Term;
 }
